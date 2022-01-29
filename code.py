@@ -1,3 +1,15 @@
+# Connect Mahjong Panel to PC as USB keyboard.
+# 
+# Build using CircuitPython, with adafruit_hid library and put on a Raspberry Pi Pico.
+#
+# Instructions:
+# - Hook up COM pins to GP0-5
+# - Hook up KEY pins to GP6-10
+# - Connect USB to PC.
+# - See button_mappings dictionary if you want to modify keys.
+#
+# buffi - 2022
+
 import board
 import time
 import usb_hid
