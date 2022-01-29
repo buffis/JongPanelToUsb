@@ -17,17 +17,13 @@ from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from digitalio import DigitalInOut, Direction, Pull
 
-class IoWrap():
-    def __init__(self, pin):
-        self.pin, self.io = pin, DigitalInOut(pin)
-
-key_pins = list(map(IoWrap, [board.GP0, board.GP1, board.GP2, board.GP3, board.GP4, board.GP5]))
-com_pins = list(map(IoWrap, [board.GP6, board.GP7, board.GP8, board.GP9, board.GP10]))
+key_pins = list(map(DigitalInOut, [board.GP0, board.GP1, board.GP2, board.GP3, board.GP4, board.GP5]))
+com_pins = list(map(DigitalInOut, [board.GP6, board.GP7, board.GP8, board.GP9, board.GP10]))
 
 for pin in key_pins:
-    pin.io.direction, pin.io.pull  = Direction.INPUT,  Pull.UP
+    pin.direction, pin.pull  = Direction.INPUT,  Pull.UP
 for pin in com_pins:
-    pin.io.direction, pin.io.value = Direction.OUTPUT, 1  
+    pin.direction, pin.value = Direction.OUTPUT, 1  
 
 kbd = Keyboard(usb_hid.devices)
 
@@ -49,20 +45,20 @@ button_mappings = {
 
 pressed = set()  # Keycodes currently pressed.
 
-def set_pressed(button, activate):
-    if activate and button not in pressed:
-        print ("Pressing " + str(button))
+def set_press_state(button, is_pressed):
+    if is_pressed and button not in pressed:
+        print ("Pressing keycode: " + str(button))
         pressed.add(button)
         kbd.press(button)
-    if not activate and button in pressed:
-        print ("Unpressing " + str(button))
+    if not is_pressed and button in pressed:
+        print ("Unpressing keycode: " + str(button))
         pressed.remove(button)
         kbd.release(button)
   
 while True:
     for com_idx, com in enumerate(com_pins):
-        com.io.value = 0
+        com.value = 0
         for key_idx, key in enumerate(key_pins):
-            set_pressed(button_mappings[com_idx][key_idx], not key.io.value)
-        com.io.value = 1
+            set_press_state(button_mappings[com_idx][key_idx], not key.value)
+        com.value = 1
     time.sleep(0.01)
